@@ -58,14 +58,14 @@ class LeaflowAutoCheckin:
         """关闭初始弹窗"""
         try:
             logger.info("尝试关闭初始弹窗...")
-            time.sleep(3)  # 等待弹窗加载
+            time.sleep(8)  # 等待弹窗加载
             
             # 尝试关闭弹窗
             try:
                 actions = ActionChains(self.driver)
                 actions.move_by_offset(10, 10).click().perform()
                 logger.info("已成功关闭弹窗")
-                time.sleep(2)
+                time.sleep(8)
                 return True
             except:
                 pass
@@ -93,7 +93,7 @@ class LeaflowAutoCheckin:
         
         # 访问登录页面
         self.driver.get("https://leaflow.net/login")
-        time.sleep(5)
+        time.sleep(8)
         
         # 关闭弹窗
         self.close_popup()
@@ -103,7 +103,7 @@ class LeaflowAutoCheckin:
             logger.info("查找邮箱输入框...")
             
             # 等待页面稳定
-            time.sleep(2)
+            time.sleep(8)
             
             # 尝试多种选择器找到邮箱输入框
             email_selectors = [
@@ -119,7 +119,7 @@ class LeaflowAutoCheckin:
             email_input = None
             for selector in email_selectors:
                 try:
-                    email_input = self.wait_for_element_clickable(By.CSS_SELECTOR, selector, 5)
+                    email_input = self.wait_for_element_clickable(By.CSS_SELECTOR, selector, 8)
                     logger.info(f"找到邮箱输入框")
                     break
                 except:
@@ -132,7 +132,7 @@ class LeaflowAutoCheckin:
             email_input.clear()
             email_input.send_keys(self.email)
             logger.info("邮箱输入完成")
-            time.sleep(2)
+            time.sleep(8)
             
         except Exception as e:
             logger.error(f"输入邮箱时出错: {e}")
@@ -140,7 +140,7 @@ class LeaflowAutoCheckin:
             try:
                 self.driver.execute_script(f"document.querySelector('input[type=\"text\"], input[type=\"email\"]').value = '{self.email}';")
                 logger.info("通过JavaScript设置邮箱")
-                time.sleep(2)
+                time.sleep(8)
             except:
                 raise Exception(f"无法输入邮箱: {e}")
         
@@ -156,7 +156,7 @@ class LeaflowAutoCheckin:
             password_input.clear()
             password_input.send_keys(self.password)
             logger.info("密码输入完成")
-            time.sleep(1)
+            time.sleep(5)
             
         except TimeoutException:
             raise Exception("找不到密码输入框")
@@ -176,9 +176,9 @@ class LeaflowAutoCheckin:
             for selector in login_btn_selectors:
                 try:
                     if selector.startswith("//"):
-                        login_btn = self.wait_for_element_clickable(By.XPATH, selector, 5)
+                        login_btn = self.wait_for_element_clickable(By.XPATH, selector, 9)
                     else:
-                        login_btn = self.wait_for_element_clickable(By.CSS_SELECTOR, selector, 5)
+                        login_btn = self.wait_for_element_clickable(By.CSS_SELECTOR, selector, 9)
                     logger.info(f"找到登录按钮")
                     break
                 except:
@@ -195,7 +195,7 @@ class LeaflowAutoCheckin:
         
         # 等待登录完成
         try:
-            WebDriverWait(self.driver, 20).until(
+            WebDriverWait(self.driver, 30).until(
                 lambda driver: "dashboard" in driver.current_url or "workspaces" in driver.current_url or "login" not in driver.current_url
             )
             
@@ -232,7 +232,7 @@ class LeaflowAutoCheckin:
             time.sleep(3)
             
             # 等待页面加载
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.TAG_NAME, "body"))
             )
             
@@ -270,7 +270,7 @@ class LeaflowAutoCheckin:
             logger.warning(f"获取余额时出错: {e}")
             return "未知"
     
-    def wait_for_checkin_page_loaded(self, max_retries=3, wait_time=20):
+    def wait_for_checkin_page_loaded(self, max_retries=3, wait_time=30):
         """等待签到页面完全加载，支持重试"""
         for attempt in range(max_retries):
             logger.info(f"等待签到页面加载，尝试 {attempt + 1}/{max_retries}，等待 {wait_time} 秒...")
@@ -316,7 +316,7 @@ class LeaflowAutoCheckin:
         
         try:
             # 先等待页面可能的重载
-            time.sleep(5)
+            time.sleep(9)
             
             # 使用和单账号成功时相同的选择器
             checkin_selectors = [
@@ -330,11 +330,11 @@ class LeaflowAutoCheckin:
             for selector in checkin_selectors:
                 try:
                     if selector.startswith("//"):
-                        checkin_btn = WebDriverWait(self.driver, 15).until(
+                        checkin_btn = WebDriverWait(self.driver, 20).until(
                             EC.presence_of_element_located((By.XPATH, selector))
                         )
                     else:
-                        checkin_btn = WebDriverWait(self.driver, 15).until(
+                        checkin_btn = WebDriverWait(self.driver, 20).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                         )
                     
@@ -603,7 +603,7 @@ class MultiAccountManager:
                 
                 # 在账号之间添加间隔，避免请求过于频繁
                 if i < len(self.accounts):
-                    wait_time = 5
+                    wait_time = 20
                     logger.info(f"等待{wait_time}秒后处理下一个账号...")
                     time.sleep(wait_time)
                     
@@ -640,3 +640,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
